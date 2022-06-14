@@ -18,34 +18,3 @@
   text-decoration: none;
   color: #0671e0;
 }
-
-.form-group {
-  padding: 20px;
-  font-size: 1.5rem;
-}
-
-.form-group input {
-  padding: 10px;
-  border-style: none;
-  border-radius: 3px;
-  background-color: #eef5fc;
-  width: 60%;
-}
-
-.form-group input::placeholder {
-  font-family: 'Inter', sans-serif;
-}
-
-.btn {
-  font-family: 'Inter', sans-serif;
-  border-radius: 3px;
-  border-width: 0;
-  background-color: #0671e0;
-  color: #fff;
-  padding: 10px 20px;
-  box-shadow: 2px 2px 5px #333;
-}
-
-.btn:hover {
-  background-color: #218dfc;
-}

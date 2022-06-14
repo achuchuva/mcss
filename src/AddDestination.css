@@ -1,0 +1,13 @@
+.form-group .coordinates {
+  display: flex;
+}
+
+.form-group .coordinates input {
+  width: 50px;
+  margin: 0 10px;
+}
+
+.add-destination .form-group input[type="checkbox"] {
+  width: 10px;
+  background-color: red;
+}

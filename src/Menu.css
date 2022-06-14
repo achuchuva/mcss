@@ -1,0 +1,38 @@
+.navbar .btn {
+  margin-top: 10px;
+  margin-right: 10px;
+  float: right;
+}
+
+.menu-content {
+  display: flex;
+}
+
+.menu-content h1 {
+  font-size: 2rem;
+}
+
+.select-world {
+  flex: 2;
+  padding: 20px;
+  text-align: center;
+}
+
+.img-holder {
+  width: 800px;
+  height: 500px;
+}
+
+.change-world {
+  flex: 1;
+  padding: 20px;
+}
+
+.create-world, .add-world {
+  padding: 20px;
+}
+
+.select-world .holder, .change-world .holder {
+  background: #d9d9d9;
+  box-shadow: 2px 2px 5px #333;
+}
