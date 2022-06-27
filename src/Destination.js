@@ -1,5 +1,6 @@
 import './Destination.css';
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 function Destination() {
   return (
@@ -7,11 +8,11 @@ function Destination() {
       <header className="destination-navbar">
         <div className="destination-overlay">
           <div>
-            <button className="btn">Menu</button>
-            <button className="btn">Map</button>
+            <Link to="/menu"><button className="btn">Menu</button></Link>
+            <Link to="/map"><button className="btn">Map</button></Link>
           </div>
           <h1>Overworld Village</h1>
-          <button className="btn">Save Changes</button>
+          <Link to="/map"><button className="btn">Save Changes</button></Link>
         </div>
       </header>
 

@@ -1,11 +1,12 @@
 import './Menu.css';
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 function Menu() {
   return (
     <div>
       <header className="navbar">
-        <button className="btn">Log out</button>
+        <Link to="/"><button className="btn">Log out</button></Link>
         <h1>Minecraft Coordinate Storage System</h1>
         <p>Welcome, Username</p>
       </header>
@@ -14,7 +15,9 @@ function Menu() {
         <div className="select-world">
           <h1>Select World</h1>
           <div className="holder">
+            <Link to="/map">
             <img className="img-holder" src={"/images/menu_sample.jpg"} alt="menu_sample" />
+            </Link>
             <div className="selector">
               <div className="world-name">First World</div>
             </div>
@@ -30,7 +33,7 @@ function Menu() {
                 <input name='world-name' type="text" placeholder='Enter World Name'></input>
               </div>
               <div className="form-group">
-                <button type="submit" class="btn">Add World</button>
+                <button type="submit" className="btn">Add World</button>
               </div>
             </div>
           </div>
@@ -42,7 +45,7 @@ function Menu() {
                 <input name='world-name' type="text" placeholder='Enter World Name'></input>
               </div>
               <div className="form-group">
-                <button type="submit" class="btn">Add World</button>
+                <button type="submit" className="btn">Add World</button>
               </div>
             </div>
           </div>

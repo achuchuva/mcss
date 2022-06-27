@@ -1,5 +1,6 @@
 import './Login.css';
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 function Login() {
   return (
@@ -23,7 +24,9 @@ function Login() {
               Don't have an account? <a href="https://google.com" className="signup-link">Sign up</a>
             </div>
             <div className="form-group">
-              <button type="submit" class="btn">Sign in</button>
+              <Link to="/menu">
+                <button type="submit" className="btn">Sign in</button>
+              </Link>
             </div>
           </form>
         </div>
@@ -46,10 +49,12 @@ function Login() {
               <input name='email' type="email" placeholder='Enter Email'></input>
             </div>
             <div className="login-message">
-                Already have an account? <a href="https://google.com" className="signin-link">Sign in</a>
+              Already have an account? <a href="https://google.com" className="signin-link">Sign in</a>
             </div>
             <div className="form-group">
-              <button type="submit" class="btn">Sign up</button>
+              <Link to="/menu">
+                <button type="submit" className="btn">Sign up</button>
+              </Link>
             </div>
           </form>
         </div>
