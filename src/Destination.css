@@ -19,9 +19,14 @@
   background-color: rgb(217, 217, 217, 0.4);
 }
 
-.destination-navbar h1 {
-  font-size: 3rem;
+.destination-navbar .destination-title {
+  font-size: 1.5rem;
   align-self: center;
+}
+
+.destination-navbar .title-text {
+  font-size: 48px;
+  font-weight: bold;
 }
 
 .destination-navbar .btn {

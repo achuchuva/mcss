@@ -2,14 +2,23 @@ import './Map.css';
 import AddDestination from './AddDestination';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Modal from 'react-modal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPenToSquare, faLocationDot, faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
 
 function Map() {
   return (
     <div>
       <section className="map">
         <div className="map-overlay">
-
+          <FontAwesomeIcon icon={faPlus} />
+          <FontAwesomeIcon icon={faMinus} />
+          <div className="map-destinations">
+            <FontAwesomeIcon icon={faLocationDot} />
+            <FontAwesomeIcon icon={faLocationDot} />
+            <FontAwesomeIcon icon={faLocationDot} />
+            <FontAwesomeIcon icon={faLocationDot} />
+            <FontAwesomeIcon icon={faLocationDot} />
+          </div>
         </div>
       </section>
       <section className="map-sidebar">
@@ -43,6 +52,9 @@ function Map() {
             <Link to="/menu">
               <button className='btn'>Menu</button>
             </Link>
+          </div>
+          <div>
+            <FontAwesomeIcon icon={faPenToSquare} />
           </div>
         </div>
       </section>
