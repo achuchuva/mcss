@@ -11,6 +11,41 @@
   height: 100%;
 }
 
+.map-destinations a {
+  text-decoration: none;
+  color: black;
+}
+
+.destination-icon .primary-tooltip {
+  font-size: 1rem;
+  visibility: hidden;
+  min-width: 150px;
+  max-height: 200px;
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  
+  /* Fade in tooltip - takes 1 second to go from 0% to 100% opacity */
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+.destination-icon .secondary-tooltip {
+  position: relative;
+  left: -50%;
+  padding: 5px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+}
+
+.destination-icon:hover .primary-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
 .map-sidebar {
   display: flex;
   flex-direction: column;
@@ -22,6 +57,11 @@
   height: 80vh;
   background-color: #d9d9d9;
   box-shadow: 2px 2px 5px #333;
+}
+
+.map-top .form-group {
+  display: flex;
+  justify-content: space-between;
 }
 
 .map-bottom {
@@ -50,4 +90,12 @@
 .map-list li a {
   text-decoration: none;
   color: black;
+}
+
+.map-sidebar-collapsed {
+  top: 0;
+  right: 0;
+  font-size: 1.5rem;
+  position: absolute;
+  padding: 10px 20px;
 }

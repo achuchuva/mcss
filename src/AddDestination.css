@@ -7,7 +7,15 @@
   margin: 0 10px;
 }
 
-.add-destination .form-group input[type="checkbox"] {
-  width: 10px;
-  background-color: red;
+.form-group input[type="checkbox"] {
+  width: 20px;
+}
+
+.form-group textarea {
+  width: 80%;
+  height: 150px;
+}
+
+.btn {
+  margin: 0 10px;
 }

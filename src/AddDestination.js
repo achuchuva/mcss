@@ -1,13 +1,11 @@
 import './AddDestination.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 
-function AddDestination() {
-
-  const [isVisible, setIsVisible] = useState(true);
+function AddDestination({ isVisible, setVisibility }) {
 
   function cancel() {
-    setIsVisible(false);
+    setVisibility(false);
   }
 
   return (
@@ -26,13 +24,14 @@ function AddDestination() {
             <div>Z:</div><input name="z" type="number"></input>
           </div>
         </div>
+
       </div>
       <div className='form-group'>
-        <label>Destination Name:</label>
+        <label>Destination Name:</label><br />
         <input name="name" type="text" placeholder='Enter name'></input>
       </div>
       <div className='form-group'>
-        <label>Type of structure:</label>
+        <label>Type of structure:</label><br />
         <select name="structure-type" className="structure-select">
           <option value="" disabled selected hidden>Select Structure Type</option>
           <option value="village">Village</option>
@@ -43,16 +42,16 @@ function AddDestination() {
       <div className='form-group'>
         <label>Destination Contains:</label>
         <div>
-          <label>Furnace</label>
           <input type="checkbox" name="furnace" value="furnace"></input>
-          <label>Chest</label>
+          <label>Furnace</label><br />
           <input type="checkbox" name="chest" value="chest"></input>
-          <label>Other...</label>
+          <label>Chest</label><br />
           <input type="checkbox" name="other" value="other"></input>
+          <label>Other...</label><br />
         </div>
       </div>
       <div className='form-group'>
-        <label>Additional Notes:</label>
+        <label>Additional Notes:</label><br />
         <textarea></textarea>
       </div>
       <button className="btn" onClick={cancel}>Cancel</button>
