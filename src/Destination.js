@@ -1,11 +1,13 @@
 import './Destination.css';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { EditText, EditTextarea } from 'react-edit-text';
 
 function Destination() {
+  const data = useLocation();
+  const { destination } = data.state;
 
   const [editModeActive, setEditModeActive] = useState(false);
 
@@ -18,15 +20,16 @@ function Destination() {
             <Link to="/map"><button className="btn">Map</button></Link>
           </div>
           <div className="destination-title">
-            <h1>Overworld Village <FontAwesomeIcon icon={faPenToSquare} /></h1>
-            <EditText 
+            <EditText
               className="title-text"
-              defaultValue="Overworld Village"
+              defaultValue={destination.name}
               style={{
                 fontSize: "48px",
                 width: "inherit",
               }}
-              inputProps={{ maxLength: 5 }} />
+              inline
+              editButtonProps={{ style: { width: '48px' } }}  
+              showEditButton />
           </div>
           <Link to="/map"><button className="btn">Save Changes</button></Link>
         </div>
@@ -35,23 +38,22 @@ function Destination() {
       <section className="destination">
         <div className="destination-coordinates">
           <h1>Coordinates:</h1>
-          <p>XYZ: 1.0 / 1.0 / 1.0</p>
+          <p>XYZ: {destination.coordinates.x} / {destination.coordinates.y} / {destination.coordinates.z}</p>
           <h1>Type of structure</h1>
-          <p>Village</p>
+          <p>{destination.structure}</p>
           <FontAwesomeIcon icon={faPenToSquare} />
         </div>
         <div className="destination-contains">
           <h1>Contains:</h1>
           <ul>
-            <li>Iron Ingots</li>
-            <li>Wheat Farm</li>
-            <li>Leather Trader</li>
+            {destination.contains.map((object) =>
+              <li>{object}</li>
+            )}
           </ul>
           <FontAwesomeIcon icon={faPenToSquare} />
         </div>
         <div className="destination-notes">
           <h1>Notes and Comments</h1>
-          <p>Village is next to lava pool. Can be easy to make nether portal next to village in future.</p>
           <EditTextarea
             style={{
               fontSize: "16px",
@@ -59,7 +61,7 @@ function Destination() {
             }}
             id="listTitle"
             name="NotesTextarea"
-            defaultValue="Village is next to lava pool. Can be easy to make nether portal next to village in future."
+            defaultValue={destination.notes}
           />
           <FontAwesomeIcon icon={faPenToSquare} />
         </div>

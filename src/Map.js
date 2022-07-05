@@ -45,7 +45,6 @@ function Map() {
     }
 
     // Push the destinations inwards so that the edge coordinates don't make contact with the border
-    console.log(centerScreenCoordinate);
     destinationToScreenRatio *= 0.4;
 
     let xOffset = (centerDestinationCoordinate[0] - coordinates.x) * destinationToScreenRatio;
@@ -56,8 +55,6 @@ function Map() {
       xOffset = -Math.abs(xOffset);
     }
 
-    console.log("xOffset", xOffset);
-
     let yOffset = (centerDestinationCoordinate[1] - coordinates.y) * destinationToScreenRatio;
     if (coordinates.y > centerDestinationCoordinate[1]) {
       // We need to offset the y to the top as the original coordinate is upwards of the center
@@ -65,8 +62,6 @@ function Map() {
     } else {
       yOffset = -Math.abs(yOffset);
     }
-
-    console.log("yOffset", yOffset);
 
     // "Possible" TODO: Fix positioning of icons due to the icons spawning from the top left
 
@@ -170,7 +165,7 @@ function Map() {
           <FontAwesomeIcon icon={faMinus} />
           <div className="map-destinations">
             {data.map((destination) =>
-              <Link to="/destination">
+              <Link to="/destination" state={{destination: destination}}>
                 <div className="destination-icon" style={positionIcon(destination.coordinates)}>
                   <span className="primary-tooltip">
                     <div className="secondary-tooltip">
@@ -203,11 +198,9 @@ function Map() {
               </select>
             </div>
             <ul className="map-list">
-              <li><Link to="/destination">Dirt House</Link></li>
-              <li><Link to="/destination">Woodland Mansion</Link></li>
-              <li><Link to="/destination">Lava Pool</Link></li>
-              <li><Link to="/destination">Village</Link></li>
-              <li><Link to="/destination">Cave Entrance</Link></li>
+              {data.map((destination) =>
+                <li><Link to="/destination" state={{destination: destination}}>{destination.name}</Link></li>
+              )}
             </ul>
           </div>
           <div className="map-bottom">
