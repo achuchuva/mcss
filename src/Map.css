@@ -28,7 +28,7 @@
   
   /* Fade in tooltip - takes 1 second to go from 0% to 100% opacity */
   opacity: 0;
-  transition: opacity 1s;
+  transition: 0.75s;
 }
 
 .destination-icon .secondary-tooltip {
@@ -44,6 +44,14 @@
 .destination-icon:hover .primary-tooltip {
   visibility: visible;
   opacity: 1;
+}
+
+.destination-icon .icon {
+  transition: 0.25s;
+}
+
+.destination-icon .icon:hover {
+  transform: scale(1.1);
 }
 
 .map-sidebar {

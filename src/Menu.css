@@ -20,6 +20,13 @@
 
 .img-holder {
   width: 50vw;
+  margin: 10px 0;
+  box-shadow: 2px 2px 5px #333;
+  transition: transform .2s;
+}
+
+.img-holder:hover {
+  transform: scale(1.05); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
 }
 
 .change-world {
@@ -33,6 +40,24 @@
 
 .select-world .btn {
   margin: 10px;
+  color: transparent;
+  width: 135px;
+}
+
+.select-world .btn::-webkit-file-upload-button {
+  visibility: hidden;
+}
+
+.select-world .btn::before {
+  content: 'Upload Custom Image';
+  color: #fff;
+  text-align: center;
+  cursor: pointer;
+}
+
+.select-world .world-name {
+  margin: 5px 0;
+  font-size: 1.5rem;
 }
 
 .select-world .holder, .change-world .holder {

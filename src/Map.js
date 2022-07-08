@@ -173,7 +173,7 @@ function Map() {
                       <p>{`(${destination.coordinates.x}, ${destination.coordinates.y}, ${destination.coordinates.z})`}</p>
                     </div>
                   </span>
-                  <FontAwesomeIcon icon={faLocationDot} />
+                  <FontAwesomeIcon className="icon" icon={faLocationDot} />
                 </div>
               </Link>
             )}

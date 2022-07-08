@@ -14,11 +14,11 @@ function Login() {
           <form action=''>
             <div className="form-group">
               <label>Username: </label><br />
-              <input name='username' type="text" placeholder='Enter Username'></input>
+              <input name='username' type="text" required placeholder='Enter Username'></input>
             </div>
             <div className="form-group">
               <label>Password: </label><br />
-              <input name='password' type="password" placeholder='Enter Password'></input>
+              <input name='password' type="password" required placeholder='Enter Password'></input>
             </div>
             <div className="login-message">
               Don't have an account? <a href="https://google.com" className="signup-link">Sign up</a>

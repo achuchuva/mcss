@@ -22,7 +22,7 @@ function Menu() {
               <div className="world-name">First World</div>
             </div>
           </div>
-          <button className="btn">Upload Custom Image</button>
+          <input type="file" className="btn" />
         </div>
         <div className="change-world">
           <div className="create-world">
@@ -41,8 +41,8 @@ function Menu() {
             <h1>Add Shared World</h1>
             <div className="holder">
               <div className="form-group">
-                <label>World Name: </label><br />
-                <input name='world-name' type="text" placeholder='Enter World Name'></input>
+                <label>World ID: </label><br />
+                <input name='world-name' type="text" placeholder='Enter World ID'></input>
               </div>
               <div className="form-group">
                 <button type="submit" className="btn">Add World</button>
