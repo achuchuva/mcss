@@ -1,22 +1,48 @@
 import './Map.css';
 import AddDestination from './AddDestination';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faLocationDot, faPlus, faMinus, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 function Map() {
+  const data = useLocation();
+  const { world_id } = data.state;
+
+  const [destinations, setDestinations] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch(`api/destinations/?world_id=${world_id}`, {
+        method: 'GET',
+        headers: {
+          "x-api-key": localStorage.getItem("api_key")
+        }
+      });
+
+      const json = await response.text();
+      const obj = JSON.parse(json);
+
+      if (response.status == 200) {
+        setDestinations(obj);
+      } else {
+        alert(obj.message);
+      }
+    }
+
+    fetchData();
+  }, []);
 
   const [isModalActive, setModalActive] = useState(false);
   const [isSidebarActive, setSidebarActive] = useState(false);
 
-  // Finds the center in the destination array for either x or y values
+  // Finds the center in the destination array for either x or z values
   function findCenterCoordinate(dataArray, isX) {
     let lowest = Infinity;
     let highest = -Infinity;
 
     for (let i = 0; i < dataArray.length; i++) {
-      let value = isX ? dataArray[i].coordinates.x : dataArray[i].coordinates.y;
+      let value = isX ? dataArray[i].coordinate_x : dataArray[i].coordinate_z;
       if (lowest > value) {
         lowest = value;
       }
@@ -31,8 +57,8 @@ function Map() {
   }
 
   function positionIcon(coordinates) {
-    let widthBounds = findCenterCoordinate(data, true);
-    let heightBounds = findCenterCoordinate(data, false);
+    let widthBounds = findCenterCoordinate(destinations, true);
+    let heightBounds = findCenterCoordinate(destinations, false);
 
     let centerDestinationCoordinate = [(widthBounds[0] + widthBounds[1]) / 2, (heightBounds[0] + heightBounds[1]) / 2];
     let centerScreenCoordinate = [window.innerWidth / 2, window.innerHeight / 2];
@@ -55,12 +81,12 @@ function Map() {
       xOffset = -Math.abs(xOffset);
     }
 
-    let yOffset = (centerDestinationCoordinate[1] - coordinates.y) * destinationToScreenRatio;
-    if (coordinates.y > centerDestinationCoordinate[1]) {
-      // We need to offset the y to the top as the original coordinate is upwards of the center
-      yOffset = Math.abs(yOffset);
+    let zOffset = (centerDestinationCoordinate[1] - coordinates.z) * destinationToScreenRatio;
+    if (coordinates.z > centerDestinationCoordinate[1]) {
+      // We need to offset the z to the top as the original coordinate is upwards of the center
+      zOffset = Math.abs(zOffset);
     } else {
-      yOffset = -Math.abs(yOffset);
+      zOffset = -Math.abs(zOffset);
     }
 
     // "Possible" TODO: Fix positioning of icons due to the icons spawning from the top left
@@ -69,93 +95,9 @@ function Map() {
       position: "absolute",
       fontSize: "2rem",
       left: `${centerScreenCoordinate[0] + xOffset}px`,
-      bottom: `${centerScreenCoordinate[1] + yOffset}px`,
+      bottom: `${centerScreenCoordinate[1] + zOffset}px`,
     };
   }
-
-  // Sample destination data
-  const data = [
-    {
-      "name": "Dirt House",
-      "coordinates": {
-        "x": -10000,
-        "y": 1879,
-        "z": 0,
-      },
-      "structure": "Village",
-      "contains": [
-        "Iron Ingots",
-        "Wheat Farm",
-        "Leather Trader",
-      ],
-      "notes":
-        "Village is next to lava pool. Can be easy to make nether portal next to village in future."
-    },
-    {
-      "name": "Woodland Mansion",
-      "coordinates": {
-        "x": 6969,
-        "y": -5000,
-        "z": 0,
-      },
-      "structure": "Village",
-      "contains": [
-        "Iron Ingots",
-        "Wheat Farm",
-        "Leather Trader",
-      ],
-      "notes":
-        "Village is next to lava pool. Can be easy to make nether portal next to village in future."
-    },
-    {
-      "name": "Lava Pool",
-      "coordinates": {
-        "x": 2145,
-        "y": -80,
-        "z": 0,
-      },
-      "structure": "Village",
-      "contains": [
-        "Iron Ingots",
-        "Wheat Farm",
-        "Leather Trader",
-      ],
-      "notes":
-        "Village is next to lava pool. Can be easy to make nether portal next to village in future."
-    },
-    {
-      "name": "Village",
-      "coordinates": {
-        "x": -1000,
-        "y": 3000,
-        "z": 0,
-      },
-      "structure": "Village",
-      "contains": [
-        "Iron Ingots",
-        "Wheat Farm",
-        "Leather Trader",
-      ],
-      "notes":
-        "Village is next to lava pool. Can be easy to make nether portal next to village in future."
-    },
-    {
-      "name": "Cave Entrance",
-      "coordinates": {
-        "x": -500,
-        "y": 10,
-        "z": 0,
-      },
-      "structure": "Village",
-      "contains": [
-        "Iron Ingots",
-        "Wheat Farm",
-        "Leather Trader",
-      ],
-      "notes":
-        "Village is next to lava pool. Can be easy to make nether portal next to village in future."
-    }
-  ];
 
   return (
     <div>
@@ -164,19 +106,26 @@ function Map() {
           <FontAwesomeIcon icon={faPlus} />
           <FontAwesomeIcon icon={faMinus} />
           <div className="map-destinations">
-            {data.map((destination) =>
-              <Link to="/destination" state={{destination: destination}}>
-                <div className="destination-icon" style={positionIcon(destination.coordinates)}>
-                  <span className="primary-tooltip">
-                    <div className="secondary-tooltip">
-                      <p>{destination.name}</p>
-                      <p>{`(${destination.coordinates.x}, ${destination.coordinates.y}, ${destination.coordinates.z})`}</p>
-                    </div>
-                  </span>
-                  <FontAwesomeIcon className="icon" icon={faLocationDot} />
-                </div>
-              </Link>
-            )}
+            {destinations && destinations.length > 0 &&
+              destinations.map((destination) =>
+                <Link to="/destination" state={{ destination: destination }}>
+                  <div className="destination-icon" style={positionIcon(
+                    {
+                      x: destination.coordinate_x,
+                      y: destination.coordinate_y,
+                      z: destination.coordinate_z
+                    }
+                  )}>
+                    <span className="primary-tooltip">
+                      <div className="secondary-tooltip">
+                        <p>{destination.name}</p>
+                        <p>{`(${destination.coordinate_x}, ${destination.coordinate_y}, ${destination.coordinate_z})`}</p>
+                      </div>
+                    </span>
+                    <FontAwesomeIcon className="icon" icon={faLocationDot} />
+                  </div>
+                </Link>
+              )}
           </div>
         </div>
       </section>
@@ -198,9 +147,10 @@ function Map() {
               </select>
             </div>
             <ul className="map-list">
-              {data.map((destination) =>
-                <li><Link to="/destination" state={{destination: destination}}>{destination.name}</Link></li>
-              )}
+              {destinations && destinations.length > 0 &&
+                destinations.map((destination) =>
+                  <li><Link to="/destination" state={{ destination: destination }}>{destination.name}</Link></li>
+                )}
             </ul>
           </div>
           <div className="map-bottom">

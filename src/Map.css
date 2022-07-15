@@ -90,6 +90,12 @@
   padding: 10px 20px;
 }
 
+.map-sidebar .map-list {
+  overflow: scroll;
+  overflow-x: hidden;
+  height: 360px;
+}
+
 .map-list li {
   margin-left: 20px;
   list-style: none;

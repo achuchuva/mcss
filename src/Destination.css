@@ -25,10 +25,13 @@
   align-self: center;
 }
 
-.destination-navbar .title-text {
-  font-size: 48px;
-  font-weight: bold;
-
+.destination-navbar ._NGZSv {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
 }
 
 .destination-navbar .btn {
@@ -64,4 +67,8 @@
   padding: 20px;
   height: 40vh;
   box-shadow: 2px 2px 5px #333;
+}
+
+.destination-notes .notes-area {
+  height: 80% !important;
 }

@@ -44,6 +44,17 @@
   width: 135px;
 }
 
+.select-world .selector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.select-world .selector .world-name {
+  margin: 10px;
+}
+
 .select-world .btn::-webkit-file-upload-button {
   visibility: hidden;
 }
