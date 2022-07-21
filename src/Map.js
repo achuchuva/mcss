@@ -1,40 +1,87 @@
 import './Map.css';
 import AddDestination from './AddDestination';
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare, faLocationDot, faPlus, faMinus, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faLocationDot, faPlus, faMinus, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 function Map() {
   const data = useLocation();
-  const { world_id } = data.state;
+  let navigate = useNavigate();
 
+  const [shared, setShared] = useState(false);
   const [destinations, setDestinations] = useState([]);
+  const [filteredDestinations, setFilteredDestinations] = useState(null);
+  const [currentRealm, setCurrentRealm] = useState("Overworld");
+
+  const fetchDestinations = async () => {
+    const response = await fetch(`api/destinations/?world_id=${data.state.world.id}`, {
+      method: 'GET',
+      headers: {
+        "x-api-key": localStorage.getItem("api_key")
+      }
+    });
+
+    const json = await response.text();
+    const obj = JSON.parse(json);
+
+    if (response.status == 200) {
+      setDestinations(obj);
+    } else {
+      alert(obj.message);
+      navigate(-1);
+    }
+  }
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch(`api/destinations/?world_id=${world_id}`, {
-        method: 'GET',
-        headers: {
-          "x-api-key": localStorage.getItem("api_key")
-        }
-      });
-
-      const json = await response.text();
-      const obj = JSON.parse(json);
-
-      if (response.status == 200) {
-        setDestinations(obj);
-      } else {
-        alert(obj.message);
-      }
-    }
-
-    fetchData();
-  }, []);
+    fetchDestinations();
+  }, [isModalActive]);
 
   const [isModalActive, setModalActive] = useState(false);
-  const [isSidebarActive, setSidebarActive] = useState(false);
+  const [isSidebarActive, setSidebarActive] = useState(true);
+
+  function getBackgroundImage() {
+    switch (currentRealm) {
+      case "Overworld":
+        return "/images/map_sample.webp";
+      case "Nether":
+        return "/images/nether_map.png";
+      case "The End":
+        return "/images/end_map.webp";
+    }
+  }
+
+  function changeModal(v) {
+    setModalActive(v);
+    fetchDestinations();
+  }
+
+  const shareWorld = async (e) => {
+    e.preventDefault();
+
+    if (!window.confirm("Are you sure you want to share this world? This cannot be undone"))
+      return;
+
+    const response = await fetch(`api/worlds/${data.state.world.id}`, {
+      method: 'PATCH',
+      headers: {
+        "x-api-key": localStorage.getItem("api_key")
+      },
+      body: JSON.stringify({
+        shared: "1"
+      })
+    });
+
+    const json = await response.text();
+    const obj = JSON.parse(json);
+
+    if (response.status !== 200) {
+      alert("An error occured with sharing the world");
+      console.log(obj);
+    } else {
+      setShared(true);
+    }
+  }
 
   // Finds the center in the destination array for either x or z values
   function findCenterCoordinate(dataArray, isX) {
@@ -57,8 +104,25 @@ function Map() {
   }
 
   function positionIcon(coordinates) {
-    let widthBounds = findCenterCoordinate(destinations, true);
-    let heightBounds = findCenterCoordinate(destinations, false);
+    let realmDestinations = [];
+
+    for (let i = 0; i < destinations.length; i++) {
+      if (destinations[i].realm === currentRealm) {
+        realmDestinations.push(destinations[i]);
+      }
+    }
+
+    if (realmDestinations.length === 1) {
+      return {
+        position: "absolute",
+        fontSize: "2rem",
+        left: `${window.innerWidth / 2}px`,
+        bottom: `${window.innerHeight / 2}px`,
+      };
+    }
+
+    let widthBounds = findCenterCoordinate(realmDestinations, true);
+    let heightBounds = findCenterCoordinate(realmDestinations, false);
 
     let centerDestinationCoordinate = [(widthBounds[0] + widthBounds[1]) / 2, (heightBounds[0] + heightBounds[1]) / 2];
     let centerScreenCoordinate = [window.innerWidth / 2, window.innerHeight / 2];
@@ -99,15 +163,35 @@ function Map() {
     };
   }
 
+  function filterDestinations(searchValue) {
+    if (searchValue !== "") {
+      let newDestinations = [];
+      for (let i = 0; i < destinations.length; i++) {
+        if (destinations[i].name.toUpperCase().indexOf(searchValue) > -1) {
+          newDestinations.push(destinations[i]);
+        }
+      }
+
+      setFilteredDestinations(newDestinations);
+    } else {
+      setFilteredDestinations(null);
+    }
+  }
+
   return (
     <div>
-      <section className="map">
+      <section className="map"
+        style={{
+          background: `url(${getBackgroundImage()}) 
+            no-repeat center center/cover`,
+        }}>
         <div className="map-overlay">
           <FontAwesomeIcon icon={faPlus} />
           <FontAwesomeIcon icon={faMinus} />
           <div className="map-destinations">
             {destinations && destinations.length > 0 &&
               destinations.map((destination) =>
+                destination.realm === currentRealm &&
                 <Link to="/destination" state={{ destination: destination }}>
                   <div className="destination-icon" style={positionIcon(
                     {
@@ -133,29 +217,42 @@ function Map() {
         <section className="map-sidebar">
           <div className="map-top">
             <div className="form-group">
-              <input name="search" type="search" placeholder='Search'></input>
+              <input name="search" type="search" placeholder='Search' onChange={(e) => filterDestinations(e.target.value.toUpperCase())}></input>
               <div onClick={() => setSidebarActive(false)}>
                 <FontAwesomeIcon icon={faEyeSlash} className="eye-slash" />
               </div>
             </div>
             <div className="select-group">
-              <select name="realm" className="realm-select">
+              <select name="realm" className="realm-select" onChange={(e) => setCurrentRealm(e.target.value)}>
                 <option value="" disabled selected hidden>Select realm</option>
-                <option value="overworld">Overworld</option>
-                <option value="nether">Nether</option>
-                <option value="end">The End</option>
+                <option value="Overworld">Overworld</option>
+                <option value="Nether">Nether</option>
+                <option value="The End">The End</option>
               </select>
             </div>
             <ul className="map-list">
-              {destinations && destinations.length > 0 &&
-                destinations.map((destination) =>
-                  <li><Link to="/destination" state={{ destination: destination }}>{destination.name}</Link></li>
+              {filteredDestinations ?
+                (
+                  filteredDestinations.map((destination) =>
+                    destination.realm === currentRealm &&
+                    <li><Link to="/destination" state={{ destination: destination }}>{destination.name}</Link></li>
+                  )
+                ) : (
+                  destinations && destinations.length > 0 &&
+                  destinations.map((destination) =>
+                    destination.realm === currentRealm &&
+                    <li><Link to="/destination" state={{ destination: destination }}>{destination.name}</Link></li>
+                  )
                 )}
             </ul>
           </div>
           <div className="map-bottom">
-            <div>World ID: 12345</div>
-            <div><button className='btn'>Share World</button></div>
+            <div>World ID: {data.state.world.share_id}</div>
+            {data.state.world.shared || shared ? (
+              <div><button className='btn' onClick={(e) => shareWorld(e)} disabled>Share World</button></div>
+            ) : (
+              <div><button className='btn' onClick={(e) => shareWorld(e)}>Share World</button></div>
+            )}
             <div>
               <button className='btn' onClick={() => setModalActive(true)}>Add Destination</button>
             </div>
@@ -163,9 +260,6 @@ function Map() {
               <Link to="/menu">
                 <button className='btn'>Menu</button>
               </Link>
-            </div>
-            <div>
-              <FontAwesomeIcon icon={faPenToSquare} />
             </div>
           </div>
         </section>
@@ -176,7 +270,9 @@ function Map() {
           </div>
         </section>
       )}
-      <AddDestination isVisible={isModalActive} setVisibility={(v) => setModalActive(v)} />
+      {isModalActive &&
+        <AddDestination setVisibility={(v) => changeModal(v)} world_id={data.state.world.id} realm={currentRealm} />
+      }
     </div>
   );
 }

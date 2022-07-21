@@ -1,6 +1,4 @@
 .map {
-  background: url("/images/map_sample.webp") 
-  no-repeat center center/cover;
   width: 100vw;
   height: 100vh;
 }
@@ -93,7 +91,7 @@
 .map-sidebar .map-list {
   overflow: scroll;
   overflow-x: hidden;
-  height: 360px;
+  max-height: 50vh;
 }
 
 .map-list li {

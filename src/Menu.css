@@ -18,8 +18,14 @@
   text-align: center;
 }
 
+.delete-icon {
+  display: flex;
+  justify-content: end;
+}
+
 .img-holder {
-  width: 50vw;
+  max-width: 50vw;
+  max-height: 50vh;
   margin: 10px 0;
   box-shadow: 2px 2px 5px #333;
   transition: transform .2s;

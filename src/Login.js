@@ -98,7 +98,7 @@ function Login() {
               <input name='password' type="password" placeholder='Enter Password'></input>
             </div>
             <div className="login-message">
-              Don't have an account? <a href="https://google.com" className="signup-link">Sign up</a>
+              Don't have an account? Sign up instead
             </div>
             <div className="invalid-submission" />
             <div className="form-group">
@@ -121,7 +121,7 @@ function Login() {
               <input name='reenterPassword' type="password" placeholder='Re-enter password'></input>
             </div>
             <div className="login-message">
-              Already have an account? <a href="https://google.com" className="signin-link">Sign in</a>
+              Already have an account? Sign in instead
             </div>
             <div className="invalid-submission">
               Invalid submission: Email or password entered was incorrect

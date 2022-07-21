@@ -3,12 +3,16 @@
 }
 
 .form-group .coordinates input {
-  width: 50px;
+  width: 8vw;
   margin: 0 10px;
 }
 
 .form-group input[type="checkbox"] {
   width: 20px;
+}
+
+.form-group .structure-select {
+  width: 20vw;
 }
 
 .form-group textarea {
