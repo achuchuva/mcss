@@ -5,15 +5,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
 import { EditText, EditTextarea } from 'react-edit-text';
 
+// Default structure types listed here
 const structureTypes = ["Village", "Cave", "Dungeon", "Stronghold", "Ocean Monument", "Desert Temple", "Igloo", "Shipwreck", "Woodland Mansion", "Bastion", "Nether Fortress", "Ruined Portal", "End Gateway", "End City", "End Ship", "End Portal"];
+// Options to choose different objects that the destination contains
 const objectTypes = ["Crafting Table", "Furnace", "Chest", "Ender Chest", "Enchanting Table", "Brewing Stand", "Jukebox", "Dispenser", "Piston", "Bed", "Anvil"];
 
 function Destination() {
+  // Use location from react router to pass down params, in this case the destination data
   const data = useLocation();
   const { destination } = data.state;
 
   let navigate = useNavigate();
 
+  // Declare all variables that can be updated as states
   const [objects, setObjects] = useState([]);
   const [updatedName, setUpdatedName] = useState();
   const [updatedX, setUpdatedX] = useState();
@@ -23,9 +27,11 @@ function Destination() {
   const [updatedObjects, setUpdatedObjects] = useState(null);
   const [updatedNotes, setUpdatedNotes] = useState();
 
+  // States to determine whether the coordinates or objects are being modified
   const [editCoords, setEditCoords] = useState(false);
   const [editObjects, setEditObjects] = useState(false);
 
+  // Initial async call to fetch the data of the destination using the id received from the params
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(`api/objects/?destination_id=${destination.id}`, {
@@ -41,6 +47,7 @@ function Destination() {
       if (response.status == 200) {
         setObjects(obj);
       } else {
+        // An error occured, inform the user
         alert(obj.message);
       }
     }
@@ -48,6 +55,7 @@ function Destination() {
     fetchData();
   }, []);
 
+  // Function that updates different coordinates based on the name and value passed as an argument
   function handleCoordChange(e) {
     let name = e.target.name;
     switch (name) {
@@ -63,6 +71,8 @@ function Destination() {
     }
   }
 
+  // Function that updates the objects the destination contains
+  // Very similar to the function seen in AddDestination.js
   function handleContainsChange(e) {
     let array;
     if (updatedObjects !== null) {
@@ -80,6 +90,7 @@ function Destination() {
     setUpdatedObjects(array);
   }
 
+  // The user has clicked save changes, any changes that were made are now sent to the backend
   const saveChanges = async () => {
     const response = await fetch(`api/destinations/${destination.id}?world_id=${destination.world_id}`, {
       method: 'PATCH',
@@ -97,18 +108,24 @@ function Destination() {
       })
     });
 
+    // If nothing was changed, no changes are made and the backend handles the request with no errors
+
     const json = await response.text();
     const obj = JSON.parse(json);
 
     if (response.status !== 200) {
+      // An error has occured, alert the user
       alert(obj.message);
       return;
     }
 
+    // Everything was successful, the page navigates back to the Map component
     navigate(-1);
   }
 
+  // Request to the backend to delete the destination
   const deleteDestination = async () => {
+    // Ask the user if they want to continue
     if (window.confirm("Are you sure you want to delete this destination?")) {
       const response = await fetch(`api/destinations/${destination.id}?world_id=${destination.world_id}`, {
         method: 'DELETE',
@@ -121,14 +138,18 @@ function Destination() {
       const obj = JSON.parse(json);
 
       if (response.status !== 200) {
+        // If there was an error, alert the user
         alert(obj.message);
         return;
       }
 
+      // Everything was successful, return to the Map component
       navigate(-1);
     }
   }
 
+  // When the edit mode for destination objects is activated, reset the objects updated 
+  // state so that multiple entries of the same name aren't made
   function enterEditObjectsMode(isEntering) {
     setUpdatedObjects([]);
     setEditObjects(isEntering);
@@ -176,18 +197,18 @@ function Destination() {
                 {updatedStructure ? (updatedStructure) : (destination.structure)}
               </p><br />
               <div onClick={() => setEditCoords(true)}>
-                <FontAwesomeIcon icon={faPenToSquare} size="2x" />
+                <FontAwesomeIcon icon={faPenToSquare} size="2x" className="icon" />
               </div>
             </>
           ) : (
-            <form>
+            <form className="destination-form">
               <h1>Coordinates:</h1>
               <label>X: </label>
-              <input type="number" name="x" onChange={handleCoordChange} /><br />
+              <input type="number" min="-100000" max="100000" name="x" onChange={handleCoordChange} /><br />
               <label>Y: </label>
-              <input type="number" name="y" onChange={handleCoordChange} /><br />
+              <input type="number" min="-100000" max="100000" name="y" onChange={handleCoordChange} /><br />
               <label>Z: </label>
-              <input type="number" name="z" onChange={handleCoordChange} /><br />
+              <input type="number" min="-100000" max="100000" name="z" onChange={handleCoordChange} /><br />
               <h1>Structure:</h1>
               <input type="text" className="structure-select" list="structures"
                 placeholder='Enter structure type' onChange={(e) => setUpdatedStructure(e.target.value)} />
@@ -197,7 +218,7 @@ function Destination() {
                 ))}
               </datalist><br />
               <button onClick={() => setEditCoords(false)}>
-                <FontAwesomeIcon icon={faFloppyDisk} size="2x" />
+                <FontAwesomeIcon icon={faFloppyDisk} size="2x" className="icon" />
               </button>
             </form>
           )}
@@ -218,7 +239,7 @@ function Destination() {
                 }
               </ul><br />
               <div onClick={() => enterEditObjectsMode(true)}>
-                <FontAwesomeIcon icon={faPenToSquare} size="2x" />
+                <FontAwesomeIcon icon={faPenToSquare} size="2x" className="icon" />
               </div>
             </>
           ) : (
@@ -230,8 +251,8 @@ function Destination() {
                 </>
               )}
               <br />
-              <button onClick={() => setEditObjects(false)}>
-                <FontAwesomeIcon icon={faFloppyDisk} size="2x" />
+              <button onClick={() => setEditObjects(false)} className="unstyled-button">
+                <FontAwesomeIcon icon={faFloppyDisk} size="2x" className="icon" />
               </button>
             </form>
           )}

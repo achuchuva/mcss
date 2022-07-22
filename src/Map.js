@@ -6,14 +6,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot, faPlus, faMinus, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 function Map() {
+  // Using location from react router, state params are passed down from the Menu component
   const data = useLocation();
+
   let navigate = useNavigate();
 
+  // Declare all state variables required
   const [shared, setShared] = useState(false);
   const [destinations, setDestinations] = useState([]);
   const [filteredDestinations, setFilteredDestinations] = useState(null);
   const [currentRealm, setCurrentRealm] = useState("Overworld");
 
+  // Function requesting all destinations for the given world id selected by the user
   const fetchDestinations = async () => {
     const response = await fetch(`api/destinations/?world_id=${data.state.world.id}`, {
       method: 'GET',
@@ -28,18 +32,23 @@ function Map() {
     if (response.status == 200) {
       setDestinations(obj);
     } else {
+      // An error occured and the user is navigated back to the menu
       alert(obj.message);
       navigate(-1);
     }
   }
 
+  // When component mounts fetch destinations
+  // When the state isModalActive changes, fetch destinations
   useEffect(() => {
     fetchDestinations();
   }, [isModalActive]);
 
+  // States to determine whether modal (Add Destination popup) and sidebar is active
   const [isModalActive, setModalActive] = useState(false);
   const [isSidebarActive, setSidebarActive] = useState(true);
 
+  // Depending on the current realm state, the background image of the map changes
   function getBackgroundImage() {
     switch (currentRealm) {
       case "Overworld":
@@ -51,14 +60,18 @@ function Map() {
     }
   }
 
-  function changeModal(v) {
-    setModalActive(v);
+  // Function for when the modal visibility changes
+  // Fetch destinations again in case the destinations updated
+  function changeModal(visibility) {
+    setModalActive(visibility);
     fetchDestinations();
   }
 
+  // Request the backend to allow the world to be shared with others
   const shareWorld = async (e) => {
     e.preventDefault();
 
+    // Confirm for user
     if (!window.confirm("Are you sure you want to share this world? This cannot be undone"))
       return;
 
@@ -68,7 +81,7 @@ function Map() {
         "x-api-key": localStorage.getItem("api_key")
       },
       body: JSON.stringify({
-        shared: "1"
+        shared: "1" // MySQL doesn't understand bools, use 1 / 0 instead
       })
     });
 
@@ -76,6 +89,7 @@ function Map() {
     const obj = JSON.parse(json);
 
     if (response.status !== 200) {
+      // An issue occured, inform the user
       alert("An error occured with sharing the world");
       console.log(obj);
     } else {
@@ -83,8 +97,8 @@ function Map() {
     }
   }
 
-  // Finds the center in the destination array for either x or z values
-  function findCenterCoordinate(dataArray, isX) {
+  // Finds the bounds in the destination array for either x or z values
+  function findCoordinateBounds(dataArray, isX) {
     let lowest = Infinity;
     let highest = -Infinity;
 
@@ -99,19 +113,21 @@ function Map() {
       }
     }
 
-    // Returns the middle between the lowest and highest value
+    // Returns the lowest and highest values in an array
     return [lowest, highest];
   }
 
   function positionIcon(coordinates) {
     let realmDestinations = [];
 
+    // Loop through destinations and filter out whose realm doesn't match the currently selected realm
     for (let i = 0; i < destinations.length; i++) {
       if (destinations[i].realm === currentRealm) {
         realmDestinations.push(destinations[i]);
       }
     }
 
+    // If there is only one destination, completely center the coordinate and return
     if (realmDestinations.length === 1) {
       return {
         position: "absolute",
@@ -121,13 +137,24 @@ function Map() {
       };
     }
 
-    let widthBounds = findCenterCoordinate(realmDestinations, true);
-    let heightBounds = findCenterCoordinate(realmDestinations, false);
+    // Find the two x coordinate values that are the furthest apart (lowest and highest)
+    let widthBounds = findCoordinateBounds(realmDestinations, true);
 
+    // Find the two z coordinate values that are the furthest apart (lowest and highest)
+    let heightBounds = findCoordinateBounds(realmDestinations, false);
+
+    // Find the center coordinate of the destinations based on the largest difference found by the bounds
     let centerDestinationCoordinate = [(widthBounds[0] + widthBounds[1]) / 2, (heightBounds[0] + heightBounds[1]) / 2];
+
+    // Find the center coordinate of the screen
     let centerScreenCoordinate = [window.innerWidth / 2, window.innerHeight / 2];
 
+    // Find the destination to screen ratio to convert coordinate values to pixels
     let destinationToScreenRatio;
+
+    // Whichever bound difference is greatest
+    // i.e. is the difference between the largest x values greater than the difference between the larget z values?
+    // is then used to set the ratio
     if (widthBounds[1] - widthBounds[0] > heightBounds[1] - heightBounds[0]) {
       destinationToScreenRatio = window.innerWidth / (widthBounds[1] - widthBounds[0]);
     } else {
@@ -135,8 +162,9 @@ function Map() {
     }
 
     // Push the destinations inwards so that the edge coordinates don't make contact with the border
-    destinationToScreenRatio *= 0.4;
+    destinationToScreenRatio *= 0.5;
 
+    // Find the offset of the coordinates from the center along the x axis
     let xOffset = (centerDestinationCoordinate[0] - coordinates.x) * destinationToScreenRatio;
     if (coordinates.x > centerDestinationCoordinate[0]) {
       // We need to offset the x to the right as the original coordinate is to the right of the center
@@ -145,6 +173,7 @@ function Map() {
       xOffset = -Math.abs(xOffset);
     }
 
+    // Find the offset of the coordinates from the center along the z axis
     let zOffset = (centerDestinationCoordinate[1] - coordinates.z) * destinationToScreenRatio;
     if (coordinates.z > centerDestinationCoordinate[1]) {
       // We need to offset the z to the top as the original coordinate is upwards of the center
@@ -153,8 +182,11 @@ function Map() {
       zOffset = -Math.abs(zOffset);
     }
 
+    // As the coordinate bounds are used to find the center, they should all fit onto the map
+
     // "Possible" TODO: Fix positioning of icons due to the icons spawning from the top left
 
+    // Return the position as a style using left and bottom
     return {
       position: "absolute",
       fontSize: "2rem",
@@ -163,17 +195,20 @@ function Map() {
     };
   }
 
+  // Search function for the sidebar
   function filterDestinations(searchValue) {
     if (searchValue !== "") {
       let newDestinations = [];
       for (let i = 0; i < destinations.length; i++) {
         if (destinations[i].name.toUpperCase().indexOf(searchValue) > -1) {
+          // The search value is found to match the destination name
           newDestinations.push(destinations[i]);
         }
       }
 
       setFilteredDestinations(newDestinations);
     } else {
+      // If the search value is blank, null the filtered destinations to display all destinations
       setFilteredDestinations(null);
     }
   }
@@ -186,8 +221,8 @@ function Map() {
             no-repeat center center/cover`,
         }}>
         <div className="map-overlay">
-          <FontAwesomeIcon icon={faPlus} />
-          <FontAwesomeIcon icon={faMinus} />
+          <FontAwesomeIcon icon={faPlus} className="icon" />
+          <FontAwesomeIcon icon={faMinus} className="icon" />
           <div className="map-destinations">
             {destinations && destinations.length > 0 &&
               destinations.map((destination) =>
@@ -206,7 +241,7 @@ function Map() {
                         <p>{`(${destination.coordinate_x}, ${destination.coordinate_y}, ${destination.coordinate_z})`}</p>
                       </div>
                     </span>
-                    <FontAwesomeIcon className="icon" icon={faLocationDot} />
+                    <FontAwesomeIcon className="icon" icon={faLocationDot}/>
                   </div>
                 </Link>
               )}
@@ -219,7 +254,7 @@ function Map() {
             <div className="form-group">
               <input name="search" type="search" placeholder='Search' onChange={(e) => filterDestinations(e.target.value.toUpperCase())}></input>
               <div onClick={() => setSidebarActive(false)}>
-                <FontAwesomeIcon icon={faEyeSlash} className="eye-slash" />
+                <FontAwesomeIcon icon={faEyeSlash} className="eye-slash icon"/>
               </div>
             </div>
             <div className="select-group">

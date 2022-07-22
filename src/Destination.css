@@ -82,3 +82,21 @@
   background-color: #c4c4c4;
   transition: background-color 0.3s;
 }
+
+.destination-form input {
+  padding: 10px;
+  margin: 5px 0;
+  border-style: none;
+  border-radius: 3px;
+  background-color: #eef5fc;
+  width: 60%;
+}
+
+.destination-form input[type="number"] {
+  width: 40%;
+}
+
+.destination-form button, .unstyled-button {
+  all: unset;
+  cursor: pointer;
+}

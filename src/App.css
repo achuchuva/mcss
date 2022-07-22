@@ -61,3 +61,7 @@
 .select-group option {
   background-color: #eef5fc;
 }
+
+.icon {
+  cursor: pointer;
+}
